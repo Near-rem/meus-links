@@ -18,9 +18,9 @@
             box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.1);
         }
 
-        .data-line { margin-bottom: 12px; font-size: 14px; border-bottom: 1px solid #1a1a1a; padding-bottom: 5px; display: flex; justify-content: space-between; }
+        .data-line { margin-bottom: 12px; font-size: 14px; border-bottom: 1px solid #1a1a1a; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .label { color: #00FF00; text-transform: uppercase; }
-        .value { color: #ff0000; font-weight: bold; text-align: right; }
+        .value { color: #ff0000; font-weight: bold; text-align: right; word-break: break-all; margin-left: 10px; }
 
         .warning { color: #888; font-size: 11px; margin-top: 25px; text-align: center; max-width: 300px; line-height: 1.4; }
         .btn-back { margin-top: 30px; color: #fff; text-decoration: none; border: 1px solid #fff; padding: 10px 20px; border-radius: 5px; transition: 0.3s; font-size: 13px; }
@@ -32,54 +32,71 @@
     <h2 class="header-red">DADOS COLETADOS</h2>
 
     <div class="data-box">
-        <div class="data-line"><span class="label">IPv4:</span> <span id="ip" class="value">...</span></div>
-        <div class="data-line"><span class="label">Provedor:</span> <span id="isp" class="value">...</span></div>
-        <div class="data-line"><span class="label">Local:</span> <span id="loc" class="value">...</span></div>
-        <div class="data-line"><span class="label">Sistema:</span> <span id="os" class="value">...</span></div>
-        <div class="data-line"><span class="label">Browser:</span> <span id="brw" class="value">...</span></div>
+        <div class="data-line"><span class="label">IPv4:</span> <span id="ip" class="value">Carregando...</span></div>
+        <div class="data-line"><span class="label">Provedor:</span> <span id="isp" class="value">Carregando...</span></div>
+        <div class="data-line"><span class="label">Local:</span> <span id="loc" class="value">Carregando...</span></div>
+        <div class="data-line"><span class="label">Sistema:</span> <span id="os" class="value">Identificando...</span></div>
+        <div class="data-line"><span class="label">Browser:</span> <span id="brw" class="value">Identificando...</span></div>
         <div class="data-line"><span class="label">Tela:</span> <span id="res" class="value">...</span></div>
-        <div class="data-line"><span class="label">Bateria:</span> <span id="bat" class="value">...</span></div>
+        <div class="data-line"><span class="label">Bateria:</span> <span id="bat" class="value">Aguardando...</span></div>
     </div>
 
-    <p class="warning">VOCÊ NÃO DEU NADA. O SEU NAVEGADOR APENAS CONCORDOU EM COMPARTILHAR O QUE EU PRECISAVA.</p>
+    <p class="warning">VOCÊ NÃO "DEU" NADA. O SEU NAVEGADOR APENAS ENTREGOU O QUE EU SOLICITEI.</p>
 
     <a href="index.html" class="btn-back">VOLTAR AO SISTEMA</a>
 
     <script>
         async function coletar() {
+            // 1. Coleta de IP e Geolocalização (Usando ip-api - Sem HTTPS direto pode precisar de atenção, mas é excelente para testes)
             try {
-                // Pega IP, ISP e Localização
-                const res = await fetch('https://ipapi.co/json/');
+                const res = await fetch('http://ip-api.com/json/?fields=status,message,country,regionName,city,isp,query');
                 const data = await res.json();
-                document.getElementById('ip').innerText = data.ip;
-                document.getElementById('isp').innerText = data.org;
-                document.getElementById('loc').innerText = `${data.city}, ${data.region}`;
-
-                // Hardware e Navegador
-                const ua = navigator.userAgent;
-                let os = "Mobile/PC";
-                if (ua.indexOf("Win") != -1) os = "Windows";
-                if (ua.indexOf("Android") != -1) os = "Android";
-                if (ua.indexOf("iPhone") != -1) os = "iOS";
                 
-                document.getElementById('os').innerText = os;
-                document.getElementById('brw').innerText = navigator.appName || "Webkit";
-                document.getElementById('res').innerText = `${window.screen.width}x${window.screen.height}`;
-
-                // Bateria (API de bateria)
-                if (navigator.getBattery) {
-                    navigator.getBattery().then(function(battery) {
-                        document.getElementById('bat').innerText = Math.round(battery.level * 100) + "%";
-                    });
+                if(data.status === "success") {
+                    document.getElementById('ip').innerText = data.query;
+                    document.getElementById('isp').innerText = data.isp;
+                    document.getElementById('loc').innerText = `${data.city}, ${data.regionName}`;
                 } else {
-                    document.getElementById('bat').innerText = "N/A";
+                    document.getElementById('ip').innerText = "Bloqueado";
                 }
-
             } catch (e) {
-                console.log("Erro na captura.");
+                document.getElementById('ip').innerText = "Erro na API";
+            }
+
+            // 2. Hardware e Navegador
+            const ua = navigator.userAgent;
+            let os = "Desconhecido";
+            if (ua.indexOf("Win") != -1) os = "Windows";
+            else if (ua.indexOf("Android") != -1) os = "Android";
+            else if (ua.indexOf("iPhone") != -1 || ua.indexOf("iPad") != -1) os = "iOS";
+            else if (ua.indexOf("Mac") != -1) os = "macOS";
+            else if (ua.indexOf("Linux") != -1) os = "Linux";
+            
+            let brw = "Browser";
+            if (ua.indexOf("Chrome") != -1) brw = "Chrome";
+            else if (ua.indexOf("Firefox") != -1) brw = "Firefox";
+            else if (ua.indexOf("Safari") != -1) brw = "Safari";
+            else if (ua.indexOf("Edge") != -1) brw = "Edge";
+
+            document.getElementById('os').innerText = os;
+            document.getElementById('brw').innerText = brw;
+            document.getElementById('res').innerText = `${window.screen.width}x${window.screen.height}`;
+
+            // 3. Bateria
+            if (navigator.getBattery) {
+                navigator.getBattery().then(function(battery) {
+                    const updateBattery = () => {
+                        document.getElementById('bat').innerText = Math.round(battery.level * 100) + "%";
+                    };
+                    updateBattery();
+                    battery.addEventListener('levelchange', updateBattery);
+                });
+            } else {
+                document.getElementById('bat').innerText = "Privado/Indisponível";
             }
         }
-        coletar();
+
+        window.onload = coletar;
     </script>
 </body>
 </html>
