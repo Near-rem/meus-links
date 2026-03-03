@@ -6,20 +6,35 @@
     <title>Near Rem - Hacks</title>
     <style>
         body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px 20px; margin: 0; }
-        .photo-container { width: 120px; height: 120px; border-radius: 60px; border: 2px solid #ff0000; overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
+        
+        /* Container da foto com brilho vermelho */
+        .photo-container { 
+            width: 150px; 
+            height: 150px; 
+            border-radius: 50%; 
+            border: 2px solid #ff0000; 
+            overflow: hidden; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); 
+        }
         .photo-container img { width: 100%; height: 100%; object-fit: cover; }
-        h1 { font-size: 22px; color: #ff0000; margin: 0; letter-spacing: 2px; text-transform: uppercase; }
+        
+        h1 { font-size: 24px; color: #ff0000; margin: 0; letter-spacing: 3px; text-transform: uppercase; text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
         .bio { color: #00FF00; font-family: monospace; font-size: 14px; margin: 15px 0 30px 0; }
+        
         .button-container { width: 100%; max-width: 350px; }
         .btn { background-color: #1A1A1A; border: 1px solid #444; color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; transition: 0.3s; cursor: pointer; }
-        .btn:hover { border-color: #ff0000; background-color: #220000; }
+        .btn:hover { border-color: #ff0000; background-color: #220000; transform: scale(1.02); }
+        
         .btn-back { color: #888; text-decoration: none; margin-top: 20px; font-size: 14px; }
+        .btn-back:hover { color: #fff; }
 
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; }
-        #custom-alert { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #111; border: 2px solid #ff0000; padding: 25px; z-index: 1000; text-align: center; border-radius: 15px; box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); width: 80%; max-width: 300px; }
-        #custom-alert h2 { color: #ff0000; margin-top: 0; font-size: 18px; }
-        #custom-alert p { font-family: monospace; color: #fff; font-size: 14px; margin-bottom: 20px; }
-        #custom-alert button { background: #ff0000; border: none; color: #fff; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        /* Pop-up */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; }
+        #custom-alert { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #050505; border: 2px solid #ff0000; padding: 30px; z-index: 1000; text-align: center; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.7); width: 80%; max-width: 300px; }
+        #custom-alert h2 { color: #ff0000; margin-top: 0; font-size: 20px; letter-spacing: 1px; }
+        #custom-alert p { font-family: monospace; color: #fff; font-size: 14px; margin-bottom: 25px; }
+        #custom-alert button { background: #ff0000; border: none; color: #fff; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -27,12 +42,12 @@
     <div id="overlay"></div>
     <div id="custom-alert">
         <h2>ACESSO NEGADO</h2>
-        <p>Código de segurança não aprovado!</p>
+        <p>> Erro: 0x8004005<br>> Código de segurança não aprovado!</p>
         <button onclick="fecharPopUp()">ENTENDIDO</button>
     </div>
 
     <div class="photo-container">
-        <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqZ3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/l41lM8A5pBAH7M5e0/giphy.gif" alt="Hacker GIF">
+        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e70f6f6d-3e6f-4d9b-a010-86716a7f0532/da6a90p-4098528f-7c42-4786-9f82-3d96160897f2.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVlY2I3N2NiIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlZWNiNzc2Y2IiLCJvYmoiOltbeyJwYXRoIjoiL2YvZTcwZjZmNmQtM2U2Zi00ZDliLWEwMTAtODY3MTZhN2YwNTMyL2RhNmE5MHAtNDA5ODUyOGYtN2M0Mi00Nzg2LTlmODItM2Q5NjE2MDg5N2YyLmdpZiJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl19.FmY6zXpX9M0G_tT6v6P8eM5U4X8Wz6v6P8eM5U4X8Wz" alt="DedSec Hacker">
     </div>
 
     <h1>Hacks</h1>
@@ -40,8 +55,8 @@
 
     <div class="button-container">
         <a href="https://discord.gg/kDJCpD8kch" target="_blank" class="btn">Servidor sem rastro</a>
-        <div class="btn" onclick="abrirPopUp()">❌Sem autorização❌</div>
-        <div class="btn" onclick="abrirPopUp()">❌Sem autorização❌</div>
+        <div class="btn" onclick="abrirPopUp()">❌ Sem autorização ❌</div>
+        <div class="btn" onclick="abrirPopUp()">❌ Sem autorização ❌</div>
         <a href="index.html" class="btn-back">← Voltar</a>
     </div>
 
