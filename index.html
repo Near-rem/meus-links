@@ -6,13 +6,24 @@
     <title>Near Rem - Links</title>
     <style>
         body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px 20px; margin: 0; }
-        .photo-container { width: 150px; height: 150px; border-radius: 75px; border: 3px solid #007AFF; overflow: hidden; margin-bottom: 20px; }
+        
+        /* Alterado a cor da borda para branco (#fff) */
+        .photo-container { 
+            width: 150px; 
+            height: 150px; 
+            border-radius: 75px; 
+            border: 3px solid #fff; 
+            overflow: hidden; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); /* Adicionei um leve brilho branco para combinar */
+        }
+        
         .photo-container img { width: 100%; height: 100%; object-fit: cover; }
         h1 { font-size: 26px; margin: 0; letter-spacing: 1px; }
         .bio { color: #00FF00; font-family: monospace; font-size: 14px; margin: 15px 0 30px 0; text-align: center; }
         .button-container { width: 100%; max-width: 350px; }
         .btn { background-color: #1A1A1A; border: 1px solid #333; color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background-color: #252525; border-color: #007AFF; }
+        .btn:hover { background-color: #252525; border-color: #fff; } /* Hover também alterado para branco */
     </style>
 </head>
 <body>
