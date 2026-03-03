@@ -30,4 +30,56 @@
 
         .button-container { width: 100%; max-width: 350px; }
         .btn { background-color: #1A1A1A; border: 1px solid #333; color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; transition: 0.3s; }
-        .btn:hover { border-color: #0
+        .btn:hover { border-color: #00FF00; background-color: #002200; }
+        .btn-back { color: #888; text-decoration: none; margin-top: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="photo-container">
+        <img src="https://images.steamusercontent.com/ugc/1707411824065086559/2A529F1C69440493566E31AB4242623DC50F8875/?imw=512&&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false">
+    </div>
+
+    <h1>System Profile</h1>
+
+    <div class="terminal-box">
+        <span id="terminal-content"></span><span class="cursor"></span>
+    </div>
+
+    <div class="button-container">
+        <a href="https://wa.me/5521971839439" target="_blank" class="btn">Chamar no Zap</a>
+        <a href="index.html" class="btn-back">← Voltar</a>
+    </div>
+
+    <script>
+        const lines = [
+            "> Carregando dados...",
+            "> Usuário: Near Rem",
+            "> Status: Online",
+            "> Conhecimentos: HTML, CSS, JavaScript, Python, Java, PHP, C, C++, C#, React, Lua, SQL e outras.",
+            "> Dados: Humilde o suficiente para saber que sou descartável. Bom o suficiente para saber que será um downgrade.",
+            "> OBS: Seus dados já foram colhidos assim que você clicou no link."
+        ];
+
+        let lineIndex = 0;
+        let charIndex = 0;
+        const target = document.getElementById("terminal-content");
+
+        function typeWriter() {
+            if (lineIndex < lines.length) {
+                if (charIndex < lines[lineIndex].length) {
+                    target.innerHTML += lines[lineIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 40); 
+                } else {
+                    target.innerHTML += "<br>"; 
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeWriter, 500); 
+                }
+            }
+        }
+
+        window.onload = typeWriter;
+    </script>
+</body>
+</html>
