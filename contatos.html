@@ -18,25 +18,34 @@
             border: 1px solid #333; 
             color: #fff; 
             text-decoration: none; 
-            display: flex; /* Mudado para Flex para alinhar ícone e texto */
+            display: flex; 
             align-items: center;
             justify-content: center;
             padding: 18px; 
             border-radius: 12px; 
             margin-bottom: 15px; 
             font-weight: bold; 
-            transition: 0.3s; 
+            transition: 0.4s; 
             cursor: pointer; 
         }
+        .btn i { margin-right: 12px; font-size: 20px; }
+
+        /* --- Cores Customizadas no Hover --- */
         
-        /* Espaçamento do ícone */
-        .btn i { margin-right: 10px; font-size: 20px; }
+        .btn-discord:hover { border-color: #5865F2; background-color: #1e224f; color: #5865F2; box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); }
+        
+        .btn-whatsapp:hover { border-color: #25D366; background-color: #0d2e1a; color: #25D366; box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+        
+        .btn-steam:hover { border-color: #171a21; background-color: #2a475e; color: #66c0f4; box-shadow: 0 0 15px rgba(102, 192, 244, 0.3); }
+        
+        .btn-xbox:hover { border-color: #107C10; background-color: #062e06; color: #107C10; box-shadow: 0 0 15px rgba(16, 124, 16, 0.4); }
+        
+        .btn-of:hover { border-color: #ff0000; background-color: #2b0000; color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
 
-        .btn:hover { border-color: #007AFF; background-color: #001a33; }
-        .btn-of:hover { border-color: #ff0000; background-color: #2b0000; }
-        .btn-back { color: #888; text-decoration: none; margin-top: 20px; font-size: 14px; }
+        .btn-back { color: #888; text-decoration: none; margin-top: 20px; font-size: 14px; transition: 0.3s; }
+        .btn-back:hover { color: #fff; }
 
-        /* Pop-up Vermelho */
+        /* Pop-up */
         #popup-of {
             display: none;
             position: fixed;
@@ -52,17 +61,9 @@
             width: 85%;
             max-width: 300px;
         }
-        #popup-of h2 { color: #ff0000; margin-top: 0; font-size: 20px; font-weight: bold; }
-        #popup-of p { font-size: 16px; margin-bottom: 25px; font-weight: bold; line-height: 1.4; }
-        #popup-of button { background: #ff0000; border: none; color: #fff; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 999;
-        }
+        #popup-of h2 { color: #ff0000; margin-top: 0; }
+        #popup-of button { background: #ff0000; border: none; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; }
     </style>
 </head>
 <body>
@@ -82,16 +83,16 @@
     <div class="bio">ID da Sessão: <span id="glitch"></span></div>
 
     <div class="button-container">
-        <a href="https://discord.com/users/688116774092144669" target="_blank" class="btn">
-            <i class="fa-brands fa-discord"></i> Discord (Principal)
+        <a href="https://discord.com/users/688116774092144669" target="_blank" class="btn btn-discord">
+            <i class="fa-brands fa-discord"></i> Discord
         </a>
-        <a href="https://wa.me/5521971839439" target="_blank" class="btn">
+        <a href="https://wa.me/5521971839439" target="_blank" class="btn btn-whatsapp">
             <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
-        <a href="https://steamcommunity.com/id/near_rem" target="_blank" class="btn">
+        <a href="https://steamcommunity.com/id/near_rem" target="_blank" class="btn btn-steam">
             <i class="fa-brands fa-steam"></i> Steam
         </a>
-        <a href="https://www.xbox.com/pt-BR/play/user/yIluminado" target="_blank" class="btn">
+        <a href="https://www.xbox.com/pt-BR/play/user/yIluminado" target="_blank" class="btn btn-xbox">
             <i class="fa-brands fa-xbox"></i> Xbox
         </a>
         
@@ -107,12 +108,10 @@
             document.getElementById('popup-of').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
-
         function fecharPopup() {
             document.getElementById('popup-of').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
-
         const chars = '01';
         const glitchElement = document.getElementById('glitch');
         setInterval(() => {
