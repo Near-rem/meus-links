@@ -41,7 +41,7 @@
             display: block; 
             padding: 16px; 
             border-radius: 8px; 
-            margin-bottom: 15px; 
+            margin-bottom: 12px; 
             text-align: center; 
             font-weight: 500; 
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -156,10 +156,19 @@
             {n: '10 Minute Mail', u: 'https://10minutemail.com/'}
         ])">E-mail Temporário</div>
 
-        <div class="btn" onclick="openTool('Análise de Arquivos', [
+        <div class="btn" onclick="openTool('Dorks & Infra', [
+            {n: 'DorkSearch', u: 'https://dorksearch.pro'},
+            {n: 'Shodan.io', u: 'https://www.shodan.io'},
+            {n: 'OSINT.rocks', u: 'https://osint.rocks'},
+            {n: 'Censys Search', u: 'https://search.censys.io/'},
+            {n: 'ZoomEye', u: 'https://www.zoomeye.org/'}
+        ])">Dorks & Infraestrutura</div>
+
+        <div class="btn" onclick="openTool('Análise de Malware', [
             {n: 'VirusTotal', u: 'https://www.virustotal.com/'},
-            {n: 'Hybrid Analysis', u: 'https://www.hybrid-analysis.com/'}
-        ])">Scanners de Malware</div>
+            {n: 'Hybrid Analysis', u: 'https://www.hybrid-analysis.com/'},
+            {n: 'Any.Run', u: 'https://any.run/'}
+        ])">Análise de Malware</div>
 
         <div class="btn" onclick="openTool('Inteligência OSINT', [
             {n: 'HaveIBeenPwned', u: 'https://haveibeenpwned.com/'},
