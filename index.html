@@ -5,69 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Near Rem - Core</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px 20px; margin: 0; }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 50px 20px; 
+            margin: 0; 
+            min-height: 100vh; 
+        }
         
+        /* Borda Branca conforme solicitado para o Index */
         .photo-container { 
-            width: 150px; height: 150px; border-radius: 50%; 
-            border: 2px solid #fff; overflow: hidden; margin-bottom: 20px; 
+            width: 150px; 
+            height: 150px; 
+            border-radius: 50%; 
+            border: 2px solid #fff; 
+            overflow: hidden; 
+            margin-bottom: 25px; 
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); 
         }
         .photo-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        h1 { font-size: 28px; margin: 0; letter-spacing: 4px; text-transform: uppercase; font-weight: 300; }
+        h1 { font-size: 26px; color: #fff; margin: 0; letter-spacing: 5px; text-transform: uppercase; font-weight: 300; }
         
         .bio { 
-            color: #fff; font-family: monospace; font-size: 14px; 
-            margin: 15px 0 30px 0; text-align: center; line-height: 1.6; 
-            opacity: 0.8;
+            color: #fff; 
+            font-family: monospace; 
+            font-size: 13px; 
+            margin: 15px 0 35px 0; 
+            text-align: center; 
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.05); 
+            padding: 12px 20px; 
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        #user-ip { font-weight: bold; color: #fff; text-decoration: underline; }
+        
+        #user-ip { font-weight: bold; color: #fff; text-shadow: 0 0 5px #fff; }
 
         .button-container { width: 100%; max-width: 350px; }
         
+        /* Botões Estilo Glassmorphism Branco */
         .btn { 
-            background-color: #0d0d0d; border: 1px solid #222; color: #fff; 
-            text-decoration: none; display: block; padding: 18px; border-radius: 12px; 
-            margin-bottom: 15px; text-align: center; font-weight: bold; 
-            transition: 0.4s; letter-spacing: 1px;
+            background-color: #0d0d0d; 
+            border: 1px solid #222; 
+            color: #fff; 
+            text-decoration: none; 
+            display: block; 
+            padding: 18px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            letter-spacing: 1px;
         }
         .btn:hover { 
-            border-color: #fff; color: #000; background-color: #fff; 
-            transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+            border-color: #fff; 
+            background-color: #fff; 
+            color: #000;
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
         }
 
-        .footer-msg { font-size: 10px; color: #333; margin-top: 30px; font-family: monospace; letter-spacing: 2px; }
+        .footer-tag { font-size: 10px; color: #333; margin-top: auto; font-family: monospace; letter-spacing: 2px; }
     </style>
 </head>
 <body>
+
     <div class="photo-container">
-        <img src="https://64.media.tumblr.com/5cab77a299d2902fb7dae22ffca6800d/f3416c2782181375-a5/s250x400/b6c03af6e062d404f86f4b8c388a9435b9452b37.gifv">
+        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a2f7c9d8-a913-4273-847f-705be41395df/da61r89-10eafa98-1292-47fe-86f4-0690a95fc681.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIssidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hMmY3YzlkOC1hOTEzLTQyNzMtODQ3Zi03MDViZTQxMzk1ZGYvZGE2MXI4OS0xMGVhZmE5OC0xMjkyLTQ3ZmUtODZmNC0wNjkwYTk1ZmM2ODEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GpJnJyaxOTYBAQXaDWDSOyBth_nsIpV0OC6kYy6ioaQ">
     </div>
+
     <h1>Near Rem</h1>
+
     <div class="bio">
         SESSÃO: <span id="glitch"></span><br>
-        IP_ORIGEM: <span id="user-ip">LOCALIZANDO...</span>
+        IP: <span id="user-ip">...</span>
     </div>
+
     <div class="button-container">
         <a href="contatos.html" class="btn">Meus Contatos</a>
         <a href="hacks.html" class="btn">Hacks</a>
         <a href="sobre.html" class="btn">Sobre Mim</a>
         <a href="dados.html" class="btn">O que eu dei?</a>
     </div>
+
+    <div class="footer-tag">> CORE_SYSTEM_V3</div>
+
     <script>
+        // Velocidade 1 para as letras (Glitch super rápido)
+        const chars = 'ABCDEF0123456789X';
+        const glitchElement = document.getElementById('glitch');
+        
+        setInterval(() => {
+            let result = '';
+            for (let i = 0; i < 10; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            glitchElement.innerText = result;
+        }, 1); 
+
+        // Captura do IP
         async function getIP() {
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 document.getElementById('user-ip').innerText = data.ip;
-            } catch (e) { document.getElementById('user-ip').innerText = "PROTEGIDO"; }
+            } catch (e) {
+                document.getElementById('user-ip').innerText = "PROTEGIDO";
+            }
         }
-        const chars = '0123456789ABCDEF';
-        setInterval(() => {
-            let result = '';
-            for (let i = 0; i < 10; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-            document.getElementById('glitch').innerText = result;
-        }, 80);
         window.onload = getIP;
     </script>
 </body>
