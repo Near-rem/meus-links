@@ -35,7 +35,6 @@
         
         .btn-full { grid-column: span 2; margin-top: 10px; opacity: 0.6; border: 1px dashed #444; }
 
-        /* Pop-up Glassmorphism */
         #overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 999; 
@@ -69,14 +68,22 @@
     </div>
 
     <h1>Arsenal</h1>
-    <div class="subtitle">DATA_INTEL_SYSTEM_V5</div>
+    <div class="subtitle">DARK_INTEL_SYSTEM_V6</div>
 
     <div class="button-container">
+        
+        <div class="btn" onclick="openTool('Darknet & Anon', [
+            {n: 'Daniel\'s Onion', u: 'https://onion.danwin1210.de/'},
+            {n: 'Dread (Forum)', u: 'https://dread.com/'},
+            {n: 'IntelX (Deep Web)', u: 'https://intelx.io/'},
+            {n: 'ZeroBin (Paste)', u: 'https://zerobin.org/'},
+            {n: 'SecureDrop', u: 'https://securedrop.org/'}
+        ])">Darknet & Anon</div>
+
         <div class="btn" onclick="openTool('Justiça & Tel', [
             {n: 'Jusbrasil', u: 'https://www.jusbrasil.com.br/consulta-processual/'},
             {n: 'Escavador (Preciso)', u: 'https://www.escavador.com/'},
             {n: 'CNJ (Processos)', u: 'https://www.cnj.jus.br/pje/'},
-            {n: 'Consulta Operadora', u: 'http://consultaoperadora.com.br/site2015/'},
             {n: 'Qual Empresa Chamou', u: 'https://www.qualempresamechamou.com.br/'}
         ])">Judicial & Tel</div>
 
@@ -92,12 +99,6 @@
             {n: 'Iplogger', u: 'https://iplogger.org/'}
         ])">Localizar IP</div>
 
-        <div class="btn" onclick="openTool('Host & GeoIP', [
-            {n: 'KingHost GeoIP', u: 'https://king.host/wiki/geoip/'},
-            {n: 'Site24x7 Loc', u: 'https://www.site24x7.com/pt/tools/localizar-ip.html'},
-            {n: 'WHTop Tools', u: 'https://www.whtop.com/pt/tools.ip'}
-        ])">Host & GeoIP</div>
-
         <div class="btn" onclick="openTool('Dorks & Infra', [
             {n: 'DorkSearch', u: 'https://dorksearch.pro'},
             {n: 'Shodan.io', u: 'https://www.shodan.io'},
@@ -112,8 +113,7 @@
 
         <div class="btn" onclick="openTool('OSINT', [
             {n: 'HaveIBeenPwned', u: 'https://haveibeenpwned.com/'},
-            {n: 'OSINT Framework', u: 'https://osintframework.com/'},
-            {n: 'IntelX', u: 'https://intelx.io/'}
+            {n: 'OSINT Framework', u: 'https://osintframework.com/'}
         ])">OSINT Geral</div>
 
         <div class="btn" onclick="openTool('Deep Search (+18)', [
