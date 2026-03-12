@@ -7,29 +7,30 @@
     <style>
         body { 
             background-color: #050005; /* Fundo roxo quase preto */
-            color: #d1d1d1; 
+            color: #d1d1d1; /* Texto cinza claro */
             font-family: 'Segoe UI', Roboto, sans-serif; 
             display: flex; flex-direction: column; align-items: center; 
             padding: 40px 20px; margin: 0; min-height: 100vh;
         }
 
-        /* Container da foto com gradiente Vermelho e Roxo */
+        /* Container da foto com borda roxa sutil */
         .photo-container { 
             width: 120px; height: 120px; border-radius: 50%; 
-            border: 2px solid #b30000; overflow: hidden; margin-bottom: 15px; 
-            box-shadow: 0 0 20px rgba(179, 0, 0, 0.4), 0 0 10px rgba(138, 43, 226, 0.4); 
+            border: 2px solid #2d004d; /* Borda roxa escura */
+            overflow: hidden; margin-bottom: 15px; 
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3); /* Brilho roxo suave */
             background: #000;
         }
         .photo-container img { width: 100%; height: 100%; object-fit: cover; }
 
         h1 { 
             font-size: 20px; 
-            color: #fff; 
+            color: #fff; /* Título branco */
             margin: 0; 
             letter-spacing: 4px; 
             text-transform: uppercase; 
             font-weight: 300;
-            text-shadow: 2px 2px #b30000, -1px -1px #8a2be2; /* Efeito Glitch sutil */
+            text-shadow: 2px 2px #2d004d, -1px -1px #8a2be2; /* Efeito Glitch sutil em tons de roxo */
         }
         .subtitle { 
             color: #8a2be2; /* Roxo Neon */
@@ -39,11 +40,11 @@
 
         .button-container { width: 100%; max-width: 380px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        /* Botões com transição entre borda Roxa e Vermelha */
+        /* Botões em tons de preto e cinza com hover roxo */
         .btn { 
-            background-color: #0a0a0a; 
-            border: 1px solid #2d004d; /* Borda roxa escura */
-            color: #a0a0a0; 
+            background-color: #0a0a0a; /* Fundo quase preto */
+            border: 1px solid #1a1a1a; /* Borda cinza muito escura */
+            color: #a0a0a0; /* Texto cinza */
             padding: 15px 5px; border-radius: 8px; text-align: center; 
             font-size: 10px; font-weight: 600; transition: 0.4s; 
             cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -52,19 +53,20 @@
         
         .btn:hover { 
             border-color: #ff00ff; /* Roxo Neon ao passar o mouse */
-            color: #fff; 
-            background-color: #12001a; 
+            color: #fff; /* Texto branco no hover */
+            background-color: #12001a; /* Fundo roxo muito escuro */
             transform: translateY(-2px); 
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.2), 0 0 5px rgba(255, 0, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
         }
         
         .btn-full { 
             grid-column: span 2; margin-top: 15px; opacity: 0.6; 
-            border: 1px dashed #b30000; text-decoration: none; color: #b30000;
+            border: 1px dashed #2d004d; /* Borda roxa escura tracejada */
+            text-decoration: none; color: #a0a0a0; /* Texto cinza */
         }
-        .btn-full:hover { border-color: #ff0000; color: #fff; background: #200000; }
+        .btn-full:hover { border-color: #8a2be2; color: #fff; background: #12001a; }
 
-        /* Pop-up Customizado Roxo/Vermelho */
+        /* Pop-up Customizado Roxo */
         #overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); z-index: 999; 
@@ -74,7 +76,7 @@
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             background: #050005; border: 1px solid #8a2be2; padding: 25px; z-index: 1000; 
             text-align: center; border-radius: 20px; width: 85%; max-width: 320px;
-            box-shadow: 0 0 40px rgba(138, 43, 226, 0.2);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.2);
         }
 
         #popup-title { color: #8a2be2; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
@@ -85,7 +87,7 @@
             font-size: 13px; font-family: monospace; transition: 0.2s;
         }
         .popup-link:hover { 
-            background: linear-gradient(90deg, #8a2be2, #b30000); 
+            background: #8a2be2; 
             color: #fff; font-weight: bold; border-color: #fff;
         }
         
