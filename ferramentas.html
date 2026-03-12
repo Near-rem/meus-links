@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Near Rem - Toolkit</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; margin: 0; }
+        
+        h1 { color: #ff0000; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 10px #ff0000; font-size: 22px; text-align: center; }
+        
+        .status-bar { color: #00FF00; font-size: 12px; margin-bottom: 30px; border: 1px solid #00FF00; padding: 5px 15px; border-radius: 5px; }
+
+        .tools-grid { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; max-width: 400px; }
+
+        .tool-card { 
+            background: #0a0a0a; 
+            border: 1px solid #333; 
+            padding: 15px; 
+            border-radius: 8px; 
+            transition: 0.3s; 
+            text-decoration: none; 
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover { border-color: #ff0000; transform: scale(1.03); background: #111; }
+        
+        .tool-card h3 { margin: 0 0 5px 0; color: #ff0000; font-size: 16px; }
+        .tool-card p { margin: 0; font-size: 12px; color: #888; }
+        
+        .online-tag { font-size: 9px; color: #00FF00; position: absolute; top: 10px; right: 10px; text-transform: uppercase; }
+
+        .btn-back { margin-top: 40px; color: #555; text-decoration: none; font-size: 14px; }
+        .btn-back:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <h1>Arsenal Toolkit</h1>
+    <div class="status-bar">MODO: ADMINISTRADOR | STATUS: ENCRIPTADO</div>
+
+    <div class="tools-grid">
+        <a href="https://check-host.net/" target="_blank" class="tool-card">
+            <span class="online-tag">● Ativo</span>
+            <h3>Check Host</h3>
+            <p>Verifique o status de servidores e IPs globalmente.</p>
+        </a>
+
+        <a href="https://haveibeenpwned.com/" target="_blank" class="tool-card">
+            <span class="online-tag">● Ativo</span>
+            <h3>Data Breach Search</h3>
+            <p>Veja se seu e-mail foi exposto em vazamentos.</p>
+        </a>
+
+        <a href="https://www.virustotal.com/" target="_blank" class="tool-card">
+            <span class="online-tag">● Ativo</span>
+            <h3>Scanner de Malware</h3>
+            <p>Analise arquivos e URLs suspeitas em segundos.</p>
+        </a>
+
+        <div class="tool-card" style="opacity: 0.5; cursor: not-allowed;">
+            <span class="online-tag" style="color: #666;">○ Offline</span>
+            <h3>Brute Force Sim</h3>
+            <p>Ferramenta em desenvolvimento...</p>
+        </div>
+    </div>
+
+    <a href="hacks.html" class="btn-back">← Voltar ao Terminal</a>
+
+</body>
+</html>
