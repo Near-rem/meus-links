@@ -17,7 +17,6 @@
             min-height: 100vh;
         }
 
-        /* Foto com borda Ciano/Neon para combinar com a nova imagem */
         .photo-container { 
             width: 130px; 
             height: 130px; 
@@ -34,7 +33,6 @@
 
         .button-container { width: 100%; max-width: 350px; }
 
-        /* Botões Estilo Minimalista Escuro */
         .btn { 
             background-color: #0d0d0d; 
             border: 1px solid #222; 
@@ -58,7 +56,6 @@
             box-shadow: 0 5px 15px rgba(0, 242, 255, 0.1);
         }
 
-        /* Pop-up Modernizado (Glassmorphism) */
         #overlay { 
             display: none; 
             position: fixed; 
@@ -132,10 +129,8 @@
         .btn-back { color: #444; text-decoration: none; margin-top: 30px; font-size: 13px; transition: 0.3s; }
         .btn-back:hover { color: #00f2ff; }
 
-        /* Animações */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
-
     </style>
 </head>
 <body>
@@ -153,6 +148,13 @@
             {n: 'IPWhois', u: 'https://ipwho.is/'},
             {n: 'Iplogger', u: 'https://iplogger.org/'}
         ])">Localizar IP</div>
+
+        <div class="btn" onclick="openTool('E-mail Temporário', [
+            {n: 'Temp Mail', u: 'https://temp-mail.org/pt/'},
+            {n: 'Tempail', u: 'https://tempail.com/pt/'},
+            {n: 'TempMailo', u: 'https://tempmailo.co/pt/'},
+            {n: '10 Minute Mail', u: 'https://10minutemail.com/'}
+        ])">E-mail Temporário</div>
 
         <div class="btn" onclick="openTool('Análise de Arquivos', [
             {n: 'VirusTotal', u: 'https://www.virustotal.com/'},
