@@ -5,117 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Near Rem - Arsenal</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; margin: 0; }
-        
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { color: #ff0000; font-size: 20px; letter-spacing: 5px; margin: 0; }
-        .header p { color: #00FF00; font-size: 12px; margin-top: 5px; opacity: 0.8; }
-
-        .tool-list { width: 100%; max-width: 400px; }
-
-        /* Estilo dos itens da lista */
-        .tool-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            border-bottom: 1px solid #1a1a1a;
-            cursor: pointer;
-            transition: 0.3s;
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 50px 20px; 
+            margin: 0; 
         }
-        .tool-item:hover { background: #050505; border-bottom-color: #ff0000; }
-        .tool-name { font-size: 14px; font-weight: bold; color: #eee; }
-        .tool-icon { color: #ff0000; font-size: 12px; }
 
-        /* Overlay e Pop-up */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; backdrop-filter: blur(5px); }
+        /* Foto com borda (estilo Index/Hacks) */
+        .photo-container { 
+            width: 120px; 
+            height: 120px; 
+            border-radius: 50%; 
+            border: 2px solid #ff0000; 
+            overflow: hidden; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); 
+        }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        h1 { font-size: 24px; color: #ff0000; margin: 0; letter-spacing: 3px; text-transform: uppercase; }
+        .subtitle { color: #00FF00; font-family: monospace; font-size: 14px; margin: 10px 0 30px 0; }
+
+        .button-container { width: 100%; max-width: 350px; }
+
+        /* Botão identico ao do Index/Hacks */
+        .btn { 
+            background-color: #1A1A1A; 
+            border: 1px solid #333; 
+            color: #fff; 
+            text-decoration: none; 
+            display: block; 
+            padding: 18px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            cursor: pointer; 
+        }
+        .btn:hover { 
+            border-color: #ff0000; 
+            background-color: #220000; 
+            transform: scale(1.02); 
+        }
+
+        /* Pop-up (Estilo Acesso Negado) */
+        #overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); 
+            z-index: 999; 
+        }
         #tool-popup { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            background: #0a0a0a; border: 1px solid #ff0000; padding: 25px; z-index: 101; 
-            width: 85%; max-width: 320px; border-radius: 10px; text-align: center;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+            display: none; 
+            position: fixed; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            background-color: #050505; 
+            border: 2px solid #ff0000; 
+            padding: 25px; 
+            z-index: 1000; 
+            text-align: center; 
+            border-radius: 15px; 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6); 
+            width: 85%; max-width: 300px; 
         }
-        
-        #popup-title { color: #ff0000; font-size: 16px; margin-bottom: 20px; text-transform: uppercase; }
-        
-        .popup-link {
-            display: block; background: #111; border: 1px solid #333; color: #fff; 
-            padding: 12px; margin-bottom: 10px; text-decoration: none; border-radius: 5px;
-            font-size: 13px; transition: 0.2s;
-        }
-        .popup-link:hover { border-color: #00FF00; color: #00FF00; }
-        
-        .close-btn { margin-top: 15px; color: #555; font-size: 12px; cursor: pointer; text-decoration: underline; }
 
-        .btn-back { margin-top: 50px; color: #444; text-decoration: none; font-size: 12px; border: 1px solid #222; padding: 8px 15px; border-radius: 4px; }
+        #popup-title { color: #ff0000; font-size: 18px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; }
+        
+        /* Links dentro do Pop-up */
+        .popup-link {
+            display: block; 
+            background: #111; 
+            border: 1px solid #444; 
+            color: #fff; 
+            padding: 12px; 
+            margin-bottom: 10px; 
+            text-decoration: none; 
+            border-radius: 8px;
+            font-size: 14px; 
+            transition: 0.2s;
+            font-family: monospace;
+        }
+        .popup-link:hover { background: #ff0000; border-color: #fff; color: #fff; }
+        
+        .close-btn { margin-top: 15px; color: #888; font-size: 12px; cursor: pointer; display: inline-block; }
+
+        .btn-back { color: #888; text-decoration: none; margin-top: 20px; font-size: 14px; }
+        .btn-back:hover { color: #fff; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>ARSENAL_v1.0</h1>
-        <p>> SELECIONE O MÓDULO DE ATAQUE</p>
+    <div class="photo-container">
+        <img src="https://i.makeagif.com/media/10-02-2016/A4wmZs.gif">
     </div>
 
-    <div class="tool-list">
-        <div class="tool-item" onclick="openTool('LOCALIZAR IP', [
-            {n: 'IP-API (Detalhado)', u: 'https://ip-api.com/'},
-            {n: 'IPWhois (Rápido)', u: 'https://ipwho.is/'},
-            {n: 'Check-Host', u: 'https://check-host.net/'}
-        ])">
-            <span class="tool-name">[01] LOCALIZAR IP</span>
-            <span class="tool-icon">▶</span>
-        </div>
+    <h1>Arsenal</h1>
+    <div class="subtitle">Módulos de ferramentas</div>
 
-        <div class="tool-item" onclick="openTool('SEGURANÇA / SCAN', [
+    <div class="button-container">
+        <div class="btn" onclick="openTool('Localizar IP', [
+            {n: 'IP-API', u: 'https://ip-api.com/'},
+            {n: 'IPWhois', u: 'https://ipwho.is/'},
+            {n: 'Iplogger', u: 'https://iplogger.org/'}
+        ])">Localizar IP</div>
+
+        <div class="btn" onclick="openTool('Scanners', [
             {n: 'VirusTotal', u: 'https://www.virustotal.com/'},
-            {n: 'Hybrid Analysis', u: 'https://www.hybrid-analysis.com/'},
-            {n: 'URLScan.io', u: 'https://urlscan.io/'}
-        ])">
-            <span class="tool-name">[02] SCANNER DE MALWARE</span>
-            <span class="tool-icon">▶</span>
-        </div>
+            {n: 'Hybrid Analysis', u: 'https://www.hybrid-analysis.com/'}
+        ])">Scanners de Malware</div>
 
-        <div class="tool-item" onclick="openTool('OSINT / VAZAMENTOS', [
-            {n: 'Have I Been Pwned', u: 'https://haveibeenpwned.com/'},
-            {n: 'IntelX', u: 'https://intelx.io/'},
+        <div class="btn" onclick="openTool('OSINT', [
+            {n: 'HaveIBeenPwned', u: 'https://haveibeenpwned.com/'},
             {n: 'OSINT Framework', u: 'https://osintframework.com/'}
-        ])">
-            <span class="tool-name">[03] OSINT & LEAKS</span>
-            <span class="tool-icon">▶</span>
-        </div>
+        ])">Vazamentos & OSINT</div>
+
+        <a href="hacks.html" class="btn-back">← Voltar</a>
     </div>
 
     <div id="overlay" onclick="closeTool()"></div>
     <div id="tool-popup">
         <div id="popup-title">OPÇÕES</div>
         <div id="popup-links-container"></div>
-        <div class="close-btn" onclick="closeTool()">CANCELAR_OPERACAO</div>
+        <span class="close-btn" onclick="closeTool()">[ FECHAR ]</span>
     </div>
-
-    <a href="hacks.html" class="btn-back">VOLTAR AO TERMINAL</a>
 
     <script>
         function openTool(title, links) {
-            const popup = document.getElementById('tool-popup');
-            const overlay = document.getElementById('overlay');
-            const titleEl = document.getElementById('popup-title');
             const container = document.getElementById('popup-links-container');
-
-            titleEl.innerText = title;
-            container.innerHTML = ''; // Limpa links antigos
+            document.getElementById('popup-title').innerText = title;
+            container.innerHTML = ''; 
 
             links.forEach(link => {
                 const a = document.createElement('a');
                 a.href = link.u;
                 a.target = '_blank';
                 a.className = 'popup-link';
-                a.innerText = '> ' + link.n;
+                a.innerText = link.n;
                 container.appendChild(a);
             });
 
-            popup.style.display = 'block';
-            overlay.style.display = 'block';
+            document.getElementById('tool-popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
 
         function closeTool() {
