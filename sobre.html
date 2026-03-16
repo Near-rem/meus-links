@@ -33,45 +33,50 @@
         .btn:hover { border-color: #00FF00; background-color: #002200; }
         
         .btn-delete:hover { border-color: #ff0000; background-color: #2b0000; color: #ff0000; }
+        .btn-real-name:hover { border-color: #ffaa00; background-color: #332200; color: #ffaa00; }
 
         .btn-back { color: #888; text-decoration: none; margin-top: 20px; font-size: 14px; }
 
-        /* Pop-up de Erro */
-        #popup-negado {
+        /* Estilo Base Pop-ups */
+        .modal {
             display: none;
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #000000;
-            border: 2px solid #ff0000;
+            background-color: #000;
             padding: 25px;
             z-index: 1000;
             text-align: center;
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
             width: 85%;
             max-width: 300px;
         }
 
-        /* Foto dentro do Pop-up */
-        .popup-photo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2px solid #ff0000;
-            margin-bottom: 15px;
-            object-fit: cover;
-        }
+        #popup-negado { border: 2px solid #ff0000; box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
+        #popup-info { border: 2px solid #ffaa00; box-shadow: 0 0 25px rgba(255, 170, 0, 0.4); }
 
-        #popup-negado h2 { color: #ff0000; margin-top: 0; font-size: 20px; }
-        #popup-negado p { font-size: 14px; margin-bottom: 20px; font-weight: bold; color: #ccc; }
-        #popup-negado button { background: #ff0000; border: none; color: #fff; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .popup-photo { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 15px; object-fit: cover; }
+        .photo-red { border: 2px solid #ff0000; }
+        .photo-warn { border: 2px solid #ffaa00; }
+
+        .modal h2 { margin-top: 0; font-size: 18px; text-transform: uppercase; }
+        .modal p { font-size: 13px; margin-bottom: 20px; color: #ccc; line-height: 1.5; }
         
+        .btn-group { display: flex; gap: 10px; justify-content: center; }
+        .modal button, .modal a.btn-popup { 
+            background: #222; border: 1px solid #444; color: #fff; 
+            padding: 10px 15px; border-radius: 5px; font-weight: bold; 
+            cursor: pointer; text-decoration: none; font-size: 12px;
+        }
+        
+        .btn-red { background: #ff0000 !important; border: none !important; }
+        .btn-warn { background: #ffaa00 !important; border: none !important; color: #000 !important; }
+
         #overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 999;
         }
     </style>
@@ -79,12 +84,21 @@
 <body>
 
     <div id="overlay"></div>
-    <div id="popup-negado">
-        <img src="https://64.media.tumblr.com/c4ec718efde48186f6661ff3c6b108d0/f3416c2782181375-90/s400x600/0acf943f4485e20e6a8e59292910ab8f6ff59abd.gifv" class="popup-photo">
-        
-        <h2>AÇÃO NEGADA!</h2>
+
+    <div id="popup-negado" class="modal">
+        <img src="https://64.media.tumblr.com/c4ec718efde48186f6661ff3c6b108d0/f3416c2782181375-90/s400x600/0acf943f4485e20e6a8e59292910ab8f6ff59abd.gifv" class="popup-photo photo-red">
+        <h2 style="color: #ff0000;">AÇÃO NEGADA!</h2>
         <p>Mas não se preocupe...<br>entre em contato com o dev</p>
-        <button onclick="fecharPopup()">OK</button>
+        <button class="btn-red" onclick="fecharPopups()">OK</button>
+    </div>
+
+    <div id="popup-info" class="modal">
+        <h2 style="color: #ffaa00;">AVISO DE SEGURANÇA</h2>
+        <p>Entregar dados reais pode ser uma ferramenta usada contra o desenvolvedor. <br><br>Se deseja saber minha identidade, entre em contato diretamente.</p>
+        <div class="btn-group">
+            <button onclick="fecharPopups()">OK</button>
+            <a href="contatos.html" class="btn-popup btn-warn">CONTATOS</a>
+        </div>
     </div>
 
     <div class="photo-container">
@@ -98,18 +112,20 @@
     </div>
 
     <div class="button-container">
-        <div class="btn btn-delete" onclick="abrirPopup()">Delete meus dados</div>
+        <div class="btn btn-delete" onclick="abrirPopup('popup-negado')">Delete meus dados</div>
+        <div class="btn btn-real-name" onclick="abrirPopup('popup-info')">Nome Real do DEV</div>
         <a href="index.html" class="btn-back">← Voltar</a>
     </div>
 
     <script>
-        function abrirPopup() {
-            document.getElementById('popup-negado').style.display = 'block';
+        function abrirPopup(id) {
+            document.getElementById(id).style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
-        function fecharPopup() {
+        function fecharPopups() {
             document.getElementById('popup-negado').style.display = 'none';
+            document.getElementById('popup-info').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
 
