@@ -5,221 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Near Rem - Data Extraction</title>
     <style>
-        :root {
-            --red: #ff0000;
-            --dark-red: #4d0000;
-            --green: #00ff00;
-            --bg: #050505;
-        }
-
+        :root { --red: #ff0000; --bg: #030303; --line: #1a0000; }
         body { 
-            background-color: var(--bg); 
-            color: #fff; 
-            font-family: 'Courier New', Courier, monospace; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 30px 15px; 
-            margin: 0;
-            min-height: 100vh;
+            background-color: var(--bg); color: #fff; font-family: 'Courier New', monospace; 
+            display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0;
             overflow-x: hidden;
         }
 
-        /* Efeito de Scanline */
+        /* Scanline Effect */
         body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 10; background-size: 100% 3px, 3px 100%; pointer-events: none;
         }
 
-        .header-container {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--red);
-            width: 100%;
-            max-width: 450px;
-            padding-bottom: 10px;
+        .terminal-box {
+            width: 100%; max-width: 500px; border: 1px solid var(--red);
+            background: rgba(5, 0, 0, 0.95); padding: 15px; position: relative;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
         }
 
-        .header-red { 
-            color: var(--red); 
-            text-transform: uppercase; 
-            letter-spacing: 6px; 
-            font-weight: bold; 
-            margin: 0;
-            text-shadow: 0 0 15px var(--red); 
-            font-size: 20px;
+        .header {
+            background: var(--red); color: #000; font-weight: bold;
+            padding: 5px 10px; margin: -15px -15px 15px -15px;
+            display: flex; justify-content: space-between; font-size: 12px;
         }
 
-        .status-scan {
-            font-size: 10px;
-            color: var(--green);
-            text-transform: uppercase;
-            margin-top: 5px;
+        .row { 
+            display: flex; justify-content: space-between; padding: 6px 0;
+            border-bottom: 1px solid var(--line); font-size: 13px;
         }
 
-        .data-grid { 
-            width: 100%; 
-            max-width: 450px; 
-            background: rgba(10, 0, 0, 0.8); 
-            border: 1px solid var(--dark-red); 
-            padding: 20px; 
-            border-radius: 4px; 
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
-            position: relative;
-            z-index: 3;
-        }
+        .label { color: #666; text-transform: uppercase; }
+        .value { color: var(--red); font-weight: bold; text-shadow: 0 0 5px var(--red); }
+        .value.loading { color: #555; animation: blink 1s infinite; }
 
-        .category-title {
-            font-size: 11px;
-            color: #555;
-            border-bottom: 1px solid #222;
-            margin: 15px 0 10px 0;
-            padding-bottom: 3px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        .cat { color: #fff; background: #200; padding: 2px 5px; font-size: 11px; margin-top: 15px; display: block; }
 
-        .data-line { 
-            margin-bottom: 8px; 
-            font-size: 13px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start;
-        }
+        @keyframes blink { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
 
-        .label { color: #888; text-transform: uppercase; font-size: 11px; }
-        .value { color: var(--red); font-weight: bold; text-align: right; word-break: break-all; max-width: 65%; }
-        .green-val { color: var(--green); }
-
-        .warning { color: #444; font-size: 10px; margin-top: 25px; text-align: center; max-width: 350px; text-transform: uppercase; }
-        
+        .footer { margin-top: 20px; font-size: 10px; color: #444; text-align: center; }
         .btn-back { 
-            margin-top: 25px; 
-            color: var(--red); 
-            text-decoration: none; 
-            border: 1px solid var(--red); 
-            padding: 12px 25px; 
-            border-radius: 2px; 
-            transition: 0.3s; 
-            font-size: 12px;
-            font-weight: bold;
-            background: transparent;
-            z-index: 3;
+            margin-top: 20px; color: #fff; text-decoration: none; border: 1px solid #333;
+            padding: 8px 20px; font-size: 12px; transition: 0.3s;
         }
-        .btn-back:hover { background: var(--red); color: #000; box-shadow: 0 0 15px var(--red); }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        .blinking { animation: pulse 1s infinite; }
+        .btn-back:hover { background: var(--red); color: #000; border-color: var(--red); }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <h2 class="header-red">SYSTEM INTRUSION</h2>
-        <div class="status-scan blinking">Copiando arquivos locais... 74%</div>
+    <div class="terminal-box">
+        <div class="header">
+            <span>TERMINAL_EXTRACTOR_V9</span>
+            <span id="clock">00:00:00</span>
+        </div>
+
+        <span class="cat">NETWORK_LAYER</span>
+        <div class="row"><span class="label">IPv4 Address:</span> <span id="ip" class="value loading">ANALYZING...</span></div>
+        <div class="row"><span class="label">ISP Provider:</span> <span id="isp" class="value loading">ANALYZING...</span></div>
+        <div class="row"><span class="label">Geo Location:</span> <span id="loc" class="value loading">ANALYZING...</span></div>
+        <div class="row"><span class="label">Timezone:</span> <span id="tz" class="value loading">ANALYZING...</span></div>
+
+        <span class="cat">HARDWARE_LAYER</span>
+        <div class="row"><span class="label">GPU Renderer:</span> <span id="gpu" class="value">...</span></div>
+        <div class="row"><span class="label">CPU Cores:</span> <span id="cpu" class="value">...</span></div>
+        <div class="row"><span class="label">Device Memory:</span> <span id="ram" class="value">...</span></div>
+        <div class="row"><span class="label">Power Status:</span> <span id="bat" class="value">...</span></div>
+
+        <span class="cat">SOFTWARE_LAYER</span>
+        <div class="row"><span class="label">Operation Sys:</span> <span id="os" class="value">...</span></div>
+        <div class="row"><span class="label">Browser Agent:</span> <span id="brw" class="value">...</span></div>
+        <div class="row"><span class="label">Screen Res:</span> <span id="res" class="value">...</span></div>
+        <div class="row"><span class="label">Language:</span> <span id="lang" class="value">...</span></div>
     </div>
 
-    <div class="data-grid">
-        <div class="category-title">Conexão & Rede</div>
-        <div class="data-line"><span class="label">Endereço IP:</span> <span id="ip" class="value">...</span></div>
-        <div class="data-line"><span class="label">Provedor:</span> <span id="isp" class="value">...</span></div>
-        <div class="data-line"><span class="label">Localização:</span> <span id="loc" class="value">...</span></div>
-        <div class="data-line"><span class="label">Fuso Horário:</span> <span id="tz" class="value">...</span></div>
-
-        <div class="category-title">Hardware & Performance</div>
-        <div class="data-line"><span class="label">Sistema:</span> <span id="os" class="value">...</span></div>
-        <div class="data-line"><span class="label">GPU:</span> <span id="gpu" class="value">...</span></div>
-        <div class="data-line"><span class="label">CPU Cores:</span> <span id="cpu" class="value green-val">...</span></div>
-        <div class="data-line"><span class="label">RAM Est.:</span> <span id="ram" class="value green-val">...</span></div>
-        <div class="data-line"><span class="label">Bateria:</span> <span id="bat" class="value">...</span></div>
-
-        <div class="category-title">Software & Navegação</div>
-        <div class="data-line"><span class="label">Navegador:</span> <span id="brw" class="value">...</span></div>
-        <div class="data-line"><span class="label">Resolução:</span> <span id="res" class="value green-val">...</span></div>
-        <div class="data-line"><span class="label">Linguagem:</span> <span id="lang" class="value">...</span></div>
-    </div>
-
-    <p class="warning">Aviso: Os metadados acima foram coletados via instâncias de API e objetos de hardware. <br> O rastreamento continua em segundo plano.</p>
-
-    <a href="index.html" class="btn-back">VOLTAR AO TERMINAL</a>
+    <div class="footer">ENCRYPTED DATA TRANSFER IN PROGRESS...</div>
+    <a href="index.html" class="btn-back">RETURN_TO_CORE</a>
 
     <script>
-        async function coletarTudo() {
-            // 1. DADOS DE REDE (IPAPI)
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                document.getElementById('ip').innerText = data.ip || "N/A";
-                document.getElementById('isp').innerText = data.org || "N/A";
-                document.getElementById('loc').innerText = `${data.city}, ${data.region} (${data.country_name})`;
-                document.getElementById('tz').innerText = data.timezone || "N/A";
-            } catch (e) {
-                document.getElementById('ip').innerText = "Bloqueado/VPN";
+        // Atualiza Relógio
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        async function fetchNetworkData() {
+            // Lista de APIs para redundância total
+            const apis = [
+                'https://ipapi.co/json/',
+                'https://ipwho.is/',
+                'https://api.ipify.org?format=json' // Fallback básico
+            ];
+
+            for (let url of apis) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    // Mapeamento dinâmico dependendo da API que responder primeiro
+                    document.getElementById('ip').innerText = data.ip || data.query || "HIDDEN";
+                    document.getElementById('isp').innerText = (data.org || data.connection?.isp || data.asn || "UNKNOWN").toUpperCase();
+                    document.getElementById('loc').innerText = data.city ? `${data.city}, ${data.region_code || data.region} (${data.country_code || data.country})` : "NOT FOUND";
+                    document.getElementById('tz').innerText = data.timezone || "N/A";
+                    
+                    document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
+                    return; // Sai do loop se conseguir os dados
+                } catch (e) {
+                    console.log("Tentando próxima rota de conexão...");
+                }
             }
+            document.getElementById('ip').innerText = "CONNECTION_FAIL";
+        }
 
-            // 2. IDENTIFICAÇÃO DO BROWSER E OS
+        function fetchHardware() {
             const ua = navigator.userAgent;
-            let os = "Desconhecido";
-            if (/Windows/i.test(ua)) os = "Windows";
-            else if (/Android/i.test(ua)) os = "Android";
-            else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
-            else if (/Linux/i.test(ua)) os = "Linux";
-            else if (/Mac/i.test(ua)) os = "macOS";
-
-            let brw = "Desconhecido";
-            if (/OPR/i.test(ua) || /Opera/i.test(ua)) brw = "Opera";
-            else if (/Edg/i.test(ua)) brw = "Microsoft Edge";
-            else if (/Chrome/i.test(ua)) brw = "Google Chrome";
-            else if (/Firefox/i.test(ua)) brw = "Mozilla Firefox";
-            else if (/Safari/i.test(ua)) brw = "Safari";
-
+            
+            // OS Detection
+            let os = "UNKNOWN";
+            if (ua.includes("Win")) os = "WINDOWS";
+            else if (ua.includes("Android")) os = "ANDROID";
+            else if (ua.includes("iPhone")) os = "IOS";
+            else if (ua.includes("Linux")) os = "LINUX";
+            else if (ua.includes("Mac")) os = "MACOS";
             document.getElementById('os').innerText = os;
+
+            // Browser Detection
+            let brw = "WEB_BROWSER";
+            if (ua.includes("OPR") || ua.includes("Opera")) brw = "OPERA";
+            else if (ua.includes("Edg")) brw = "EDGE";
+            else if (ua.includes("Chrome")) brw = "CHROME";
+            else if (ua.includes("Firefox")) brw = "FIREFOX";
             document.getElementById('brw').innerText = brw;
-            document.getElementById('res').innerText = `${window.screen.width}x${window.screen.height} (${window.devicePixelRatio}x)`;
-            document.getElementById('lang').innerText = navigator.language.toUpperCase();
 
-            // 3. HARDWARE (CPU E RAM)
-            document.getElementById('cpu').innerText = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " Threads" : "N/A";
-            document.getElementById('ram').innerText = navigator.deviceMemory ? navigator.deviceMemory + " GB" : "N/A";
-
-            // 4. GPU (PLACA DE VÍDEO)
+            // GPU Detection
             try {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
                 const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                document.getElementById('gpu').innerText = renderer.replace(/ANGLE \(.*\)/, "").trim();
-            } catch (e) {
-                document.getElementById('gpu').innerText = "Não detectada";
-            }
+                document.getElementById('gpu').innerText = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).split('/').pop();
+            } catch(e) { document.getElementById('gpu').innerText = "SOFTWARE_RENDERER"; }
 
-            // 5. BATERIA
+            // Other Data
+            document.getElementById('cpu').innerText = (navigator.hardwareConcurrency || "2") + " CORES";
+            document.getElementById('ram').innerText = (navigator.deviceMemory || "N/A") + " GB (EST)";
+            document.getElementById('res').innerText = `${window.screen.width}x${window.screen.height}`;
+            document.getElementById('lang').innerText = navigator.language.toUpperCase();
+
+            // Battery
             if (navigator.getBattery) {
-                navigator.getBattery().then(bat => {
-                    const updateBat = () => {
-                        let nivel = Math.round(bat.level * 100) + "%";
-                        let status = bat.charging ? " (Carregando)" : "";
-                        document.getElementById('bat').innerText = nivel + status;
+                navigator.getBattery().then(b => {
+                    const update = () => {
+                        document.getElementById('bat').innerText = `${Math.round(b.level * 100)}% ${b.charging ? '[CHARGING]' : '[DISCHARGING]'}`;
                     };
-                    updateBat();
-                    bat.addEventListener('levelchange', updateBat);
+                    update();
+                    b.onlevelchange = update;
                 });
-            } else {
-                document.getElementById('bat').innerText = "Privado/N/A";
-            }
+            } else { document.getElementById('bat').innerText = "RESTRICTED"; }
         }
 
-        window.onload = coletarTudo;
+        window.onload = () => {
+            fetchNetworkData();
+            fetchHardware();
+        };
     </script>
 </body>
 </html>
