@@ -4,130 +4,489 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Near Rem - Core</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 50px 20px; 
-            margin: 0; 
-            min-height: 100vh; 
+        :root {
+            --accent: #ffffff;
+            --dim: rgba(255,255,255,0.08);
+            --border: rgba(255,255,255,0.12);
+            --glow: rgba(255,255,255,0.15);
         }
-        
-        .photo-container { 
-            width: 150px; 
-            height: 150px; 
-            border-radius: 50%; 
-            border: 2px solid #fff; 
-            overflow: hidden; 
-            margin-bottom: 25px; 
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); 
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%;
+            background: #000;
+            overflow-x: hidden;
+        }
+
+        /* ── Canvas de partículas ── */
+        #canvas-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ── Wrapper 3D ── */
+        #scene {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            background-color: #111;
+            padding: 60px 20px 40px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.1s ease-out;
         }
 
-        /* Ajuste para a imagem carregar corretamente */
-        .photo-container img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
+        /* ── Camadas de profundidade ── */
+        .layer {
+            transform-style: preserve-3d;
+            transition: transform 0.08s ease-out;
         }
 
-        h1 { font-size: 26px; color: #fff; margin: 0; letter-spacing: 5px; text-transform: uppercase; font-weight: 300; }
-        
-        .bio { 
-            color: #fff; 
-            font-family: monospace; 
-            font-size: 13px; 
-            margin: 15px 0 35px 0; 
-            text-align: center; 
-            line-height: 1.6;
-            background: rgba(255, 255, 255, 0.05); 
-            padding: 12px 20px; 
+        /* ── Grid de fundo ── */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ── Foto ── */
+        .photo-wrap {
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .photo-ring {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.15);
+            animation: ring-spin 8s linear infinite;
+        }
+
+        .photo-ring::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: 50%;
+            transform: translateX(-50%);
+            width: 6px; height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #fff, 0 0 16px #fff;
+        }
+
+        @keyframes ring-spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .photo-container {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.4);
+            overflow: hidden;
+            box-shadow:
+                0 0 30px rgba(255,255,255,0.1),
+                0 0 60px rgba(255,255,255,0.05),
+                inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .photo-container img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        /* ── Nome ── */
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow:
+                0 0 10px rgba(255,255,255,0.5),
+                0 0 30px rgba(255,255,255,0.2);
+            margin-bottom: 24px;
+        }
+
+        /* ── Bio / sessão ── */
+        .bio {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            line-height: 2;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 14px 24px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 340px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bio::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+            animation: sweep 3s ease-in-out infinite;
+        }
+
+        @keyframes sweep {
+            0%   { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        #user-ip { color: #fff; font-weight: bold; text-shadow: 0 0 6px #fff; }
+
+        /* ── Botões ── */
+        .button-container {
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .btn {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 18px 22px;
             border-radius: 10px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        #user-ip { font-weight: bold; color: #fff; text-shadow: 0 0 5px #fff; }
-
-        .button-container { width: 100%; max-width: 350px; }
-        
-        .btn { 
-            background-color: #0d0d0d; 
-            border: 1px solid #222; 
-            color: #fff; 
-            text-decoration: none; 
-            display: block; 
-            padding: 18px; 
-            border-radius: 12px; 
-            margin-bottom: 15px; 
-            text-align: center; 
-            font-weight: bold; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            letter-spacing: 1px;
-        }
-        .btn:hover { 
-            border-color: #fff; 
-            background-color: #fff; 
-            color: #000;
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            min-height: 58px;
         }
 
-        .footer-tag { font-size: 10px; color: #333; margin-top: auto; font-family: monospace; letter-spacing: 2px; }
+        .btn-label {
+            pointer-events: none;
+        }
+
+        .btn-arrow {
+            font-size: 16px;
+            opacity: 0.4;
+            transition: all 0.3s;
+            transform: translateX(0);
+            pointer-events: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0%; height: 1px;
+            background: #fff;
+            transition: width 0.4s ease;
+            pointer-events: none;
+        }
+
+        .btn:hover {
+            border-color: rgba(255,255,255,0.5);
+            color: #fff;
+            transform: translateY(-2px) translateX(3px);
+            box-shadow:
+                0 8px 30px rgba(255,255,255,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .btn:hover::before { opacity: 1; }
+        .btn:hover::after  { width: 100%; }
+
+        .btn:hover .btn-arrow {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* ── Footer ── */
+        .footer-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 3px;
+            margin-top: 50px;
+        }
+
+        /* ── Scan-line effect ── */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* ── Vignette ── */
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ── Mobile touch parallax hint ── */
+        @media (max-width: 480px) {
+            h1 { letter-spacing: 4px; }
+            .photo-container { width: 130px; height: 130px; }
+            .btn { padding: 16px 18px; font-size: 11px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="photo-container">
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a2f7c9d8-a913-4273-847f-705be41395df/da61r89-10eafa98-1292-47fe-86f4-0690a95fc681.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hMmY3YzlkOC1hOTEzLTQyNzMtODQ3Zi03MDViZTQxMzk1ZGYvZGE2MXI4OS0xMGVhZmE5OC0xMjkyLTQ3ZmUtODZmNC0wNjkwYTk1ZmM2ODEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GpJnJyaxOTYBAQXaDWDSOyBth_nsIpV0OC6kYy6ioaQ" alt="Near">
+    <canvas id="canvas-bg"></canvas>
+    <div class="grid-overlay"></div>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div id="scene">
+
+        <!-- Camada traseira (mais profunda) -->
+        <div class="layer" data-depth="0.3">
+            <div class="photo-wrap">
+                <div class="photo-ring"></div>
+                <div class="photo-container">
+                    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a2f7c9d8-a913-4273-847f-705be41395df/da61r89-10eafa98-1292-47fe-86f4-0690a95fc681.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hMmY3YzlkOC1hOTEzLTQyNzMtODQ3Zi03MDViZTQxMzk1ZGYvZGE2MXI4OS0xMGVhZmE5OC0xMjkyLTQ3ZmUtODZmNC0wNjkwYTk1ZmM2ODEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GpJnJyaxOTYBAQXaDWDSOyBth_nsIpV0OC6kYy6ioaQ" alt="Near">
+                </div>
+            </div>
+        </div>
+
+        <!-- Camada média -->
+        <div class="layer" data-depth="0.15">
+            <h1>Near Rem</h1>
+        </div>
+
+        <!-- Camada frontal -->
+        <div class="layer" data-depth="0.05" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+            <div class="bio">
+                SESSÃO &nbsp;›&nbsp; <span id="glitch" style="color:#fff;"></span><br>
+                IP &nbsp;›&nbsp; <span id="user-ip">RESOLVENDO...</span>
+            </div>
+
+            <div class="button-container">
+                <a href="contatos.html" class="btn">
+                    <span class="btn-label">Meus Contatos</span>
+                    <span class="btn-arrow">›</span>
+                </a>
+                <a href="hacks.html" class="btn">
+                    <span class="btn-label">Arsenal</span>
+                    <span class="btn-arrow">›</span>
+                </a>
+                <a href="sobre.html" class="btn">
+                    <span class="btn-label">Sobre Mim</span>
+                    <span class="btn-arrow">›</span>
+                </a>
+                <a href="dados.html" class="btn">
+                    <span class="btn-label">Beta</span>
+                    <span class="btn-arrow">›</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-tag">> CORE_SYSTEM_V3</div>
+
     </div>
-
-    <h1>Near Rem</h1>
-
-    <div class="bio">
-        SESSÃO: <span id="glitch"></span><br>
-        IP: <span id="user-ip">...</span>
-    </div>
-
-    <div class="button-container">
-        <a href="contatos.html" class="btn">Meus Contatos</a>
-        <a href="hacks.html" class="btn">Arsenal</a>
-        <a href="sobre.html" class="btn">Sobre Mim</a>
-        <a href="dados.html" class="btn">Beta</a>
-    </div>
-
-    <div class="footer-tag">> CORE_SYSTEM_V3</div>
 
     <script>
-        // Velocidade 1ms para o Glitch
-        const chars = 'ABCDEF0123456789X';
-        const glitchElement = document.getElementById('glitch');
-        
-        setInterval(() => {
-            let result = '';
-            for (let i = 0; i < 10; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            glitchElement.innerText = result;
-        }, 1); 
+    /* ───────────────────────────────
+       PARTÍCULAS
+    ─────────────────────────────── */
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
 
-        async function getIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                document.getElementById('user-ip').innerText = data.ip;
-            } catch (e) {
-                document.getElementById('user-ip').innerText = "PROTEGIDO";
+    function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', () => { resize(); initParticles(); });
+
+    function initParticles() {
+        const count = Math.min(Math.floor(W * H / 12000), 100);
+        particles = Array.from({ length: count }, () => ({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.5 + 0.3,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25,
+            a: Math.random() * 0.5 + 0.1
+        }));
+    }
+    initParticles();
+
+    function drawParticles() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${p.a})`;
+            ctx.fill();
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0) p.x = W;
+            if (p.x > W) p.x = 0;
+            if (p.y < 0) p.y = H;
+            if (p.y > H) p.y = 0;
+        });
+
+        // Linhas de conexão
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 100) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(255,255,255,${0.06 * (1 - dist / 100)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
             }
         }
-        window.onload = getIP;
+
+        requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+
+    /* ───────────────────────────────
+       PARALLAX 3D (mouse + gyro)
+    ─────────────────────────────── */
+    const scene  = document.getElementById('scene');
+    const layers = document.querySelectorAll('.layer');
+
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+    const STRENGTH = 18; // graus máximos
+
+    // Mouse desktop
+    document.addEventListener('mousemove', e => {
+        const cx = window.innerWidth  / 2;
+        const cy = window.innerHeight / 2;
+        targetX = ((e.clientX - cx) / cx);
+        targetY = ((e.clientY - cy) / cy);
+    });
+
+    // Toque / giroscópio mobile
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', e => {
+            if (e.gamma !== null) {
+                targetX =  Math.max(-1, Math.min(1, e.gamma / 30));
+                targetY =  Math.max(-1, Math.min(1, (e.beta  - 45) / 30));
+            }
+        });
+    }
+
+    // Touch drag mobile
+    let touchStartX = 0, touchStartY = 0;
+    document.addEventListener('touchmove', e => {
+        const t = e.touches[0];
+        const cx = window.innerWidth  / 2;
+        const cy = window.innerHeight / 2;
+        targetX = (t.clientX - cx) / cx;
+        targetY = (t.clientY - cy) / cy;
+    }, { passive: true });
+
+    function animateParallax() {
+        currentX += (targetX - currentX) * 0.06;
+        currentY += (targetY - currentY) * 0.06;
+
+        const rotY =  currentX * STRENGTH;
+        const rotX = -currentY * STRENGTH;
+
+        scene.style.transform = `perspective(1000px) rotateX(${rotX * 0.3}deg) rotateY(${rotY * 0.3}deg)`;
+
+        layers.forEach(layer => {
+            const depth = parseFloat(layer.dataset.depth || 0.1);
+            const tx = currentX * depth * 30;
+            const ty = currentY * depth * 30;
+            layer.style.transform = `translateX(${tx}px) translateY(${ty}px) translateZ(${depth * 60}px)`;
+        });
+
+        requestAnimationFrame(animateParallax);
+    }
+    animateParallax();
+
+
+    /* ───────────────────────────────
+       GLITCH ID
+    ─────────────────────────────── */
+    const chars = 'ABCDEF0123456789X#@!';
+    const glitchEl = document.getElementById('glitch');
+    setInterval(() => {
+        let s = '';
+        for (let i = 0; i < 10; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        glitchEl.textContent = s;
+    }, 80);
+
+
+    /* ───────────────────────────────
+       IP
+    ─────────────────────────────── */
+    async function getIP() {
+        try {
+            const r = await fetch('https://api.ipify.org?format=json');
+            const d = await r.json();
+            document.getElementById('user-ip').textContent = d.ip;
+        } catch {
+            document.getElementById('user-ip').textContent = 'PROTEGIDO';
+        }
+    }
+    getIP();
     </script>
 </body>
 </html>
