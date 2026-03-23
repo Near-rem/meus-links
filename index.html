@@ -20,6 +20,7 @@
             width: 100%; height: 100%;
             background: #000;
             overflow-x: hidden;
+            touch-action: manipulation; /* Melhora resposta do toque no mobile */
         }
 
         /* ── Canvas de partículas ── */
@@ -27,46 +28,63 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 0;
+            z-index: -1; /* Jogado para trás de tudo */
             pointer-events: none;
         }
 
-        /* ── Wrapper 3D ── */
-        #scene {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 60px 20px 40px;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            transition: transform 0.1s ease-out;
-        }
-
-        /* ── Camadas de profundidade ── */
-        .layer {
-            transform-style: preserve-3d;
-            transition: transform 0.08s ease-out;
-        }
-
-        /* ── Grid de fundo ── */
-        .grid-overlay {
+        /* ── Grid e Overlays ── */
+        .grid-overlay, .scanlines, .vignette {
             position: fixed;
             inset: 0;
+            pointer-events: none; /* Crucial: não bloqueia cliques */
+            z-index: 10; 
+        }
+
+        .grid-overlay {
             background-image:
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 50px 50px;
             z-index: 0;
-            pointer-events: none;
+        }
+
+        .scanlines {
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+        }
+
+        .vignette {
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+        }
+
+        /* ── Wrapper 3D ── */
+        #scene {
+            position: relative;
+            z-index: 5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px 40px;
+            perspective: 1200px;
+            transform-style: preserve-3d;
+        }
+
+        .layer {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 6;
         }
 
         /* ── Foto ── */
         .photo-wrap {
             position: relative;
             margin-bottom: 28px;
+            pointer-events: none; /* A foto não precisa de clique */
         }
 
         .photo-ring {
@@ -75,17 +93,6 @@
             border-radius: 50%;
             border: 1px solid rgba(255,255,255,0.15);
             animation: ring-spin 8s linear infinite;
-        }
-
-        .photo-ring::before {
-            content: '';
-            position: absolute;
-            top: -2px; left: 50%;
-            transform: translateX(-50%);
-            width: 6px; height: 6px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #fff, 0 0 16px #fff;
         }
 
         @keyframes ring-spin {
@@ -98,35 +105,23 @@
             border-radius: 50%;
             border: 1.5px solid rgba(255,255,255,0.4);
             overflow: hidden;
-            box-shadow:
-                0 0 30px rgba(255,255,255,0.1),
-                0 0 60px rgba(255,255,255,0.05),
-                inset 0 0 20px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 1;
+            box-shadow: 0 0 30px rgba(255,255,255,0.1);
         }
 
-        .photo-container img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: brightness(0.9) contrast(1.1);
-        }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
 
         /* ── Nome ── */
         h1 {
             font-family: 'Orbitron', monospace;
             font-size: clamp(18px, 5vw, 28px);
-            font-weight: 900;
             color: #fff;
             letter-spacing: 8px;
             text-transform: uppercase;
-            text-shadow:
-                0 0 10px rgba(255,255,255,0.5),
-                0 0 30px rgba(255,255,255,0.2);
             margin-bottom: 24px;
+            text-align: center;
         }
 
-        /* ── Bio / sessão ── */
+        /* ── Bio ── */
         .bio {
             font-family: 'Share Tech Mono', monospace;
             font-size: 12px;
@@ -141,146 +136,56 @@
             backdrop-filter: blur(10px);
             width: 100%;
             max-width: 340px;
-            position: relative;
-            overflow: hidden;
         }
 
-        .bio::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-            animation: sweep 3s ease-in-out infinite;
-        }
-
-        @keyframes sweep {
-            0%   { left: -100%; }
-            100% { left: 200%; }
-        }
-
-        #user-ip { color: #fff; font-weight: bold; text-shadow: 0 0 6px #fff; }
-
-        /* ── Botões ── */
+        /* ── Botões (Hitbox Corrigida) ── */
         .button-container {
             width: 100%;
             max-width: 340px;
             display: flex;
             flex-direction: column;
             gap: 14px;
+            position: relative;
+            z-index: 20; /* Garante que fiquem acima de overlays */
         }
 
         .btn {
             position: relative;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--border);
             color: rgba(255,255,255,0.85);
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
             padding: 18px 22px;
             border-radius: 10px;
             font-family: 'Orbitron', monospace;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            overflow: hidden;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
             cursor: pointer;
-            min-height: 58px;
+            overflow: hidden;
         }
 
-        .btn-label {
-            pointer-events: none;
-        }
-
-        .btn-arrow {
-            font-size: 16px;
-            opacity: 0.4;
-            transition: all 0.3s;
-            transform: translateX(0);
-            pointer-events: none;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .btn::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 0%; height: 1px;
-            background: #fff;
-            transition: width 0.4s ease;
-            pointer-events: none;
-        }
-
-        .btn:hover {
-            border-color: rgba(255,255,255,0.5);
+        .btn:hover, .btn:active {
+            background: rgba(255,255,255,0.1);
+            border-color: #fff;
             color: #fff;
-            transform: translateY(-2px) translateX(3px);
-            box-shadow:
-                0 8px 30px rgba(255,255,255,0.08),
-                inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
 
-        .btn:hover::before { opacity: 1; }
-        .btn:hover::after  { width: 100%; }
+        .btn-arrow { opacity: 0.4; transition: 0.3s; }
+        .btn:hover .btn-arrow { opacity: 1; transform: translateX(5px); }
 
-        .btn:hover .btn-arrow {
-            opacity: 1;
-            transform: translateX(4px);
-        }
-
-        /* ── Footer ── */
         .footer-tag {
             font-family: 'Share Tech Mono', monospace;
             font-size: 10px;
             color: rgba(255,255,255,0.15);
-            letter-spacing: 3px;
             margin-top: 50px;
-        }
-
-        /* ── Scan-line effect ── */
-        .scanlines {
-            position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.08) 2px,
-                rgba(0,0,0,0.08) 4px
-            );
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        /* ── Vignette ── */
-        .vignette {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        /* ── Mobile touch parallax hint ── */
-        @media (max-width: 480px) {
-            h1 { letter-spacing: 4px; }
-            .photo-container { width: 130px; height: 130px; }
-            .btn { padding: 16px 18px; font-size: 11px; }
         }
     </style>
 </head>
@@ -292,24 +197,20 @@
     <div class="vignette"></div>
 
     <div id="scene">
-
-        <!-- Camada traseira (mais profunda) -->
-        <div class="layer" data-depth="0.3">
+        <div class="layer" data-depth="0.1">
             <div class="photo-wrap">
                 <div class="photo-ring"></div>
                 <div class="photo-container">
-                    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a2f7c9d8-a913-4273-847f-705be41395df/da61r89-10eafa98-1292-47fe-86f4-0690a95fc681.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hMmY3YzlkOC1hOTEzLTQyNzMtODQ3Zi03MDViZTQxMzk1ZGYvZGE2MXI4OS0xMGVhZmE5OC0xMjkyLTQ3ZmUtODZmNC0wNjkwYTk1ZmM2ODEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GpJnJyaxOTYBAQXaDWDSOyBth_nsIpV0OC6kYy6ioaQ" alt="Near">
+                    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a2f7c9d8-a913-4273-847f-705be41395df/da61r89-10eafa98-1292-47fe-86f4-0690a95fc681.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hMmY3YzlkOC1hOTEzLTQyNzMtODQ3Zi03MDViZTQxMzk1ZGYvZGE2MXI4OS0xMGVhZmE5OC01MjkxLTQ3ZmUtODZmNC0wNjkwYTk1ZmM2ODEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GpJnJyaxOTYBAQXaDWDSOyBth_nsIpV0OC6kYy6ioaQ" alt="Near">
                 </div>
             </div>
         </div>
 
-        <!-- Camada média -->
-        <div class="layer" data-depth="0.15">
+        <div class="layer" data-depth="0.05">
             <h1>Near Rem</h1>
         </div>
 
-        <!-- Camada frontal -->
-        <div class="layer" data-depth="0.05" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+        <div class="layer" data-depth="0.02">
             <div class="bio">
                 SESSÃO &nbsp;›&nbsp; <span id="glitch" style="color:#fff;"></span><br>
                 IP &nbsp;›&nbsp; <span id="user-ip">RESOLVENDO...</span>
@@ -317,174 +218,112 @@
 
             <div class="button-container">
                 <a href="contatos.html" class="btn">
-                    <span class="btn-label">Meus Contatos</span>
+                    <span>Meus Contatos</span>
                     <span class="btn-arrow">›</span>
                 </a>
                 <a href="hacks.html" class="btn">
-                    <span class="btn-label">Arsenal</span>
+                    <span>Arsenal</span>
                     <span class="btn-arrow">›</span>
                 </a>
                 <a href="sobre.html" class="btn">
-                    <span class="btn-label">Sobre Mim</span>
+                    <span>Sobre Mim</span>
                     <span class="btn-arrow">›</span>
                 </a>
                 <a href="dados.html" class="btn">
-                    <span class="btn-label">Beta</span>
+                    <span>Beta</span>
                     <span class="btn-arrow">›</span>
                 </a>
             </div>
         </div>
 
         <div class="footer-tag">> CORE_SYSTEM_V3</div>
-
     </div>
 
     <script>
-    /* ───────────────────────────────
-       PARTÍCULAS
-    ─────────────────────────────── */
+    // Partículas (Simplificado para performance)
     const canvas = document.getElementById('canvas-bg');
     const ctx = canvas.getContext('2d');
     let W, H, particles = [];
 
     function resize() {
-        W = canvas.width  = window.innerWidth;
+        W = canvas.width = window.innerWidth;
         H = canvas.height = window.innerHeight;
     }
     resize();
-    window.addEventListener('resize', () => { resize(); initParticles(); });
+    window.addEventListener('resize', resize);
 
-    function initParticles() {
-        const count = Math.min(Math.floor(W * H / 12000), 100);
-        particles = Array.from({ length: count }, () => ({
-            x: Math.random() * W,
-            y: Math.random() * H,
-            r: Math.random() * 1.5 + 0.3,
-            vx: (Math.random() - 0.5) * 0.25,
-            vy: (Math.random() - 0.5) * 0.25,
-            a: Math.random() * 0.5 + 0.1
-        }));
+    function init() {
+        particles = [];
+        for(let i=0; i<60; i++) {
+            particles.push({
+                x: Math.random()*W, y: Math.random()*H,
+                vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+                r: Math.random()*1.2
+            });
+        }
     }
-    initParticles();
+    init();
 
-    function drawParticles() {
-        ctx.clearRect(0, 0, W, H);
+    function draw() {
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
         particles.forEach(p => {
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,255,255,${p.a})`;
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
             ctx.fill();
             p.x += p.vx; p.y += p.vy;
-            if (p.x < 0) p.x = W;
-            if (p.x > W) p.x = 0;
-            if (p.y < 0) p.y = H;
-            if (p.y > H) p.y = 0;
+            if(p.x<0) p.x=W; if(p.x>W) p.x=0;
+            if(p.y<0) p.y=H; if(p.y>H) p.y=0;
         });
-
-        // Linhas de conexão
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 100) {
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(255,255,255,${0.06 * (1 - dist / 100)})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
-
-        requestAnimationFrame(drawParticles);
+        requestAnimationFrame(draw);
     }
-    drawParticles();
+    draw();
 
-
-    /* ───────────────────────────────
-       PARALLAX 3D (mouse + gyro)
-    ─────────────────────────────── */
-    const scene  = document.getElementById('scene');
+    // Parallax Suave (Hitbox Safe)
+    const scene = document.getElementById('scene');
     const layers = document.querySelectorAll('.layer');
+    let tX = 0, tY = 0, cX = 0, cY = 0;
 
-    let targetX = 0, targetY = 0;
-    let currentX = 0, currentY = 0;
-    const STRENGTH = 18; // graus máximos
-
-    // Mouse desktop
     document.addEventListener('mousemove', e => {
-        const cx = window.innerWidth  / 2;
-        const cy = window.innerHeight / 2;
-        targetX = ((e.clientX - cx) / cx);
-        targetY = ((e.clientY - cy) / cy);
+        tX = (e.clientX - window.innerWidth/2) / (window.innerWidth/2);
+        tY = (e.clientY - window.innerHeight/2) / (window.innerHeight/2);
     });
 
-    // Toque / giroscópio mobile
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', e => {
-            if (e.gamma !== null) {
-                targetX =  Math.max(-1, Math.min(1, e.gamma / 30));
-                targetY =  Math.max(-1, Math.min(1, (e.beta  - 45) / 30));
-            }
+    // Giroscópio para Mobile
+    window.addEventListener('deviceorientation', e => {
+        if(e.gamma) {
+            tX = e.gamma / 30;
+            tY = (e.beta - 40) / 30;
+        }
+    });
+
+    function loop() {
+        cX += (tX - cX) * 0.08;
+        cY += (tY - cY) * 0.08;
+        
+        // Rotaciona apenas a cena levemente
+        scene.style.transform = `rotateY(${cX * 5}deg) rotateX(${-cY * 5}deg)`;
+        
+        layers.forEach(l => {
+            const d = l.dataset.depth;
+            // Move as camadas sem usar translateZ que quebra o clique
+            l.style.transform = `translateX(${cX * d * 50}px) translateY(${cY * d * 50}px)`;
         });
+        requestAnimationFrame(loop);
     }
+    loop();
 
-    // Touch drag mobile
-    let touchStartX = 0, touchStartY = 0;
-    document.addEventListener('touchmove', e => {
-        const t = e.touches[0];
-        const cx = window.innerWidth  / 2;
-        const cy = window.innerHeight / 2;
-        targetX = (t.clientX - cx) / cx;
-        targetY = (t.clientY - cy) / cy;
-    }, { passive: true });
-
-    function animateParallax() {
-        currentX += (targetX - currentX) * 0.06;
-        currentY += (targetY - currentY) * 0.06;
-
-        const rotY =  currentX * STRENGTH;
-        const rotX = -currentY * STRENGTH;
-
-        scene.style.transform = `perspective(1000px) rotateX(${rotX * 0.3}deg) rotateY(${rotY * 0.3}deg)`;
-
-        layers.forEach(layer => {
-            const depth = parseFloat(layer.dataset.depth || 0.1);
-            const tx = currentX * depth * 30;
-            const ty = currentY * depth * 30;
-            layer.style.transform = `translateX(${tx}px) translateY(${ty}px) translateZ(${depth * 60}px)`;
-        });
-
-        requestAnimationFrame(animateParallax);
-    }
-    animateParallax();
-
-
-    /* ───────────────────────────────
-       GLITCH ID
-    ─────────────────────────────── */
-    const chars = 'ABCDEF0123456789X#@!';
-    const glitchEl = document.getElementById('glitch');
+    // Glitch e IP
     setInterval(() => {
-        let s = '';
-        for (let i = 0; i < 10; i++) s += chars[Math.floor(Math.random() * chars.length)];
-        glitchEl.textContent = s;
-    }, 80);
+        document.getElementById('glitch').textContent = Math.random().toString(16).slice(2,10).toUpperCase();
+    }, 100);
 
-
-    /* ───────────────────────────────
-       IP
-    ─────────────────────────────── */
     async function getIP() {
         try {
             const r = await fetch('https://api.ipify.org?format=json');
             const d = await r.json();
             document.getElementById('user-ip').textContent = d.ip;
-        } catch {
-            document.getElementById('user-ip').textContent = 'PROTEGIDO';
-        }
+        } catch { document.getElementById('user-ip').textContent = 'ANONYMOUS'; }
     }
     getIP();
     </script>
