@@ -96,12 +96,11 @@
             font-family: 'Share Tech Mono', monospace;
             font-size: 12px;
             color: rgba(255,255,255,0.6);
-            background: rgba(255,255,255,0.02);
+            background: transparent;
             padding: 14px 28px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            border: none;
+            border-radius: 0;
             margin-bottom: 35px;
-            backdrop-filter: blur(6px);
             text-align: center;
             line-height: 2;
             width: 100%; max-width: 340px;
@@ -291,7 +290,7 @@
     setInterval(() => {
         document.getElementById('glitch').textContent =
             Math.random().toString(16).slice(2, 10).toUpperCase();
-    }, 100);
+    }, 1);
 
     /* ── IP ── */
     fetch('https://api.ipify.org?format=json')
