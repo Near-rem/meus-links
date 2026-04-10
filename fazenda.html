@@ -13,6 +13,7 @@
             --gold: #f5c842;
             --ink: #e8e2ff;
             --border: rgba(255, 255, 255, 0.1);
+            --danger: #ff4f8b;
         }
 
         body {
@@ -28,7 +29,6 @@
             user-select: none;
         }
 
-        /* HUD */
         .hud {
             display: flex;
             gap: 30px;
@@ -38,21 +38,21 @@
             padding: 15px 40px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .stat span { color: var(--gold); font-weight: bold; font-size: 1.2em; }
 
-        /* GRID DA FAZENDA */
+        /* GRID DINÂMICA */
         .farm-grid {
             display: grid;
-            grid-template-columns: repeat(3, 110px);
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
             margin-bottom: 40px;
+            width: 100%;
+            max-width: 600px;
         }
 
         .plot {
-            width: 110px;
-            height: 110px;
+            aspect-ratio: 1/1;
             background: #080808;
             border: 1px solid #1a1a1a;
             border-radius: 16px;
@@ -61,82 +61,81 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s;
         }
 
-        .plot:hover { border-color: var(--accent); background: #0f0f0f; transform: translateY(-2px); }
-
-        /* Estados da Planta */
-        .plot-icon { font-size: 24px; margin-bottom: 5px; transition: 0.3s; }
-        .plot-status { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #444; }
-
-        .plot.growing { cursor: wait; border-style: solid; border-color: #333; }
+        .plot:hover { border-color: var(--accent); background: #0f0f0f; }
+        .plot.growing { cursor: wait; opacity: 0.8; }
         .plot.ready { 
             border-color: var(--gold); 
-            background: rgba(245, 200, 66, 0.05);
             animation: pulse-ready 1.5s infinite;
         }
         @keyframes pulse-ready {
-            0% { box-shadow: 0 0 0px rgba(245, 200, 66, 0); }
-            50% { box-shadow: 0 0 15px rgba(245, 200, 66, 0.2); }
-            100% { box-shadow: 0 0 0px rgba(245, 200, 66, 0); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); box-shadow: 0 0 15px rgba(245, 200, 66, 0.2); }
         }
 
-        /* INVENTÁRIO */
-        .inventory-section { margin-bottom: 40px; width: 100%; max-width: 400px; text-align: center; }
-        .btn-inv {
-            background: #111;
-            border: 1px solid var(--border);
-            color: var(--ink);
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Space Mono', monospace;
-            transition: 0.3s;
-        }
-        .btn-inv:hover { border-color: var(--accent); color: var(--accent); }
-        .inventory-panel {
-            background: #080808;
-            border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 15px;
-            display: none;
-        }
+        .plot-icon { font-size: 28px; }
+        .plot-status { font-size: 9px; text-transform: uppercase; margin-top: 5px; color: #555; }
 
-        /* LOJA */
-        .shop-section {
+        /* SEÇÃO DE LOJA E INVENTÁRIO */
+        .container-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
+        }
+
+        .shop-section {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 25px;
+            padding: 20px;
         }
-        .shop-items { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
         .item-card {
             background: #000;
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            width: 140px;
             text-align: center;
         }
+
+        .item-card.land { border-color: var(--a2); background: linear-gradient(to bottom, #0a0a0a, #000); }
+
         .buy-btn {
             background: var(--accent);
             color: black;
             border: none;
-            padding: 8px 15px;
+            padding: 8px;
             border-radius: 6px;
             margin-top: 10px;
             cursor: pointer;
             font-weight: bold;
             width: 100%;
+            font-size: 11px;
         }
-        .buy-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
+        .buy-btn:disabled { background: #222; color: #555; }
+        .buy-btn.land-btn { background: var(--gold); }
 
+        .inv-display {
+            font-family: 'Space Mono';
+            font-size: 12px;
+            background: #080808;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+        }
     </style>
 </head>
 <body>
@@ -145,32 +144,42 @@
         <div class="stat">🪙 Moedas: <span id="coin-display">0</span></div>
     </div>
 
-    <div class="farm-grid" id="farm-grid">
+    <div class="farm-grid" id="farm-grid"></div>
+
+    <div class="container-bottom">
+        <div class="inv-display">
+            <span>🌾 Trigo: <b id="inv-trigo">0</b></span>
+            <span>🥕 Cenoura: <b id="inv-cenoura">0</b></span>
+            <span>☕ Café: <b id="inv-cafe">0</b></span>
         </div>
 
-    <div class="inventory-section">
-        <button class="btn-inv" onclick="ui.toggleInventory()">MOSTRAR INVENTÁRIO</button>
-        <div id="inventory-panel" class="inventory-panel">
-            <div style="font-family: 'Space Mono'; font-size: 12px;">
-                🌾 Sementes de Trigo: <span id="inv-seeds" style="color: var(--accent);">0</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="shop-section">
-        <h3 style="text-align: center; font-family: 'Space Mono'; color: var(--accent);">MARKETPLACE</h3>
-        <div class="shop-items">
-            <div class="item-card">
-                <div style="font-size: 24px;">🌾</div>
-                <strong>Trigo</strong>
-                <div style="color: var(--gold); font-size: 14px; margin: 5px 0;">Cost: 5</div>
-                <button class="buy-btn" onclick="game.buySeed('trigo')">COMPRAR</button>
-            </div>
-            <div class="item-card" style="opacity: 0.3;">
-                <div style="font-size: 24px;">☕</div>
-                <strong>Café</strong>
-                <div style="color: var(--gold); font-size: 14px; margin: 5px 0;">Cost: 15</div>
-                <button class="buy-btn" disabled>BLOQUEADO</button>
+        <div class="shop-section">
+            <h4 style="margin:0; text-align:center; font-family:'Space Mono'; color:var(--accent)">LOJA DE EXPANSÃO</h4>
+            <div class="shop-grid">
+                <div class="item-card land">
+                    <div style="font-size: 20px;">🏗️</div>
+                    <strong>Novo Lote</strong>
+                    <div id="land-price-tag" style="color:var(--gold); font-size:13px;">🪙 50</div>
+                    <button class="buy-btn land-btn" onclick="game.buyLand()">EXPANDIR</button>
+                </div>
+                <div class="item-card">
+                    <div style="font-size: 20px;">🌾</div>
+                    <strong>Trigo</strong>
+                    <div style="color:var(--gold); font-size:12px;">Preço: 5</div>
+                    <button class="buy-btn" onclick="game.buySeed('trigo')">COMPRAR</button>
+                </div>
+                <div class="item-card">
+                    <div style="font-size: 20px;">🥕</div>
+                    <strong>Cenoura</strong>
+                    <div style="color:var(--gold); font-size:12px;">Preço: 15</div>
+                    <button class="buy-btn" onclick="game.buySeed('cenoura')">COMPRAR</button>
+                </div>
+                <div class="item-card">
+                    <div style="font-size: 20px;">☕</div>
+                    <strong>Café</strong>
+                    <div style="color:var(--gold); font-size:12px;">Preço: 40</div>
+                    <button class="buy-btn" onclick="game.buySeed('cafe')">COMPRAR</button>
+                </div>
             </div>
         </div>
     </div>
@@ -178,23 +187,25 @@
 <script>
     const game = (function() {
         let state = {
-            coins: 20,
-            seeds: 3,
-            plots: Array(6).fill(null).map(() => ({ status: 'empty', timer: null }))
+            coins: 30,
+            seeds: { trigo: 2, cenoura: 0, cafe: 0 },
+            plots: Array(3).fill(null).map(() => ({ status: 'empty', type: null }))
         };
 
-        const config = {
-            trigo: { buy: 5, sell: 12, time: 5000 } // 5 segundos
+        const items = {
+            trigo:   { buy: 5,  sell: 12, time: 5000,  icon: '🌾', seedIcon: '🌱' },
+            cenoura: { buy: 15, sell: 40, time: 12000, icon: '🥕', seedIcon: '🌿' },
+            cafe:    { buy: 40, sell: 110, time: 30000, icon: '☕', seedIcon: '🌳' }
         };
 
-        function save() {
-            // Aqui você poderia salvar no localStorage se quisesse
-            render();
-        }
+        let landPrice = 50;
 
         function render() {
             document.getElementById('coin-display').innerText = state.coins;
-            document.getElementById('inv-seeds').innerText = state.seeds;
+            document.getElementById('inv-trigo').innerText = state.seeds.trigo;
+            document.getElementById('inv-cenoura').innerText = state.seeds.cenoura;
+            document.getElementById('inv-cafe').innerText = state.seeds.cafe;
+            document.getElementById('land-price-tag').innerText = `🪙 ${landPrice}`;
             
             const grid = document.getElementById('farm-grid');
             grid.innerHTML = '';
@@ -208,17 +219,14 @@
                 let label = 'Vazio';
 
                 if (plot.status === 'growing') {
-                    icon = '🌱';
+                    icon = items[plot.type].seedIcon;
                     label = 'Crescendo...';
                 } else if (plot.status === 'ready') {
-                    icon = '🌾';
+                    icon = items[plot.type].icon;
                     label = 'Colher!';
                 }
 
-                div.innerHTML = `
-                    <div class="plot-icon">${icon}</div>
-                    <div class="plot-status">${label}</div>
-                `;
+                div.innerHTML = `<div class="plot-icon">${icon}</div><div class="plot-status">${label}</div>`;
                 grid.appendChild(div);
             });
         }
@@ -226,28 +234,44 @@
         function handlePlotClick(index) {
             const plot = state.plots[index];
 
-            if (plot.status === 'empty' && state.seeds > 0) {
-                state.seeds--;
-                plot.status = 'growing';
-                render();
+            if (plot.status === 'empty') {
+                // Escolhe a melhor semente disponível automaticamente (prioridade café > cenoura > trigo)
+                let selected = null;
+                if (state.seeds.cafe > 0) selected = 'cafe';
+                else if (state.seeds.cenoura > 0) selected = 'cenoura';
+                else if (state.seeds.trigo > 0) selected = 'trigo';
 
-                setTimeout(() => {
-                    plot.status = 'ready';
+                if (selected) {
+                    state.seeds[selected]--;
+                    plot.status = 'growing';
+                    plot.type = selected;
                     render();
-                }, config.trigo.time);
-            } 
-            else if (plot.status === 'ready') {
+                    setTimeout(() => {
+                        plot.status = 'ready';
+                        render();
+                    }, items[selected].time);
+                }
+            } else if (plot.status === 'ready') {
+                state.coins += items[plot.type].sell;
                 plot.status = 'empty';
-                state.coins += config.trigo.sell;
+                plot.type = null;
                 render();
             }
         }
 
         return {
             buySeed: function(type) {
-                if (state.coins >= config[type].buy) {
-                    state.coins -= config[type].buy;
-                    state.seeds++;
+                if (state.coins >= items[type].buy) {
+                    state.coins -= items[type].buy;
+                    state.seeds[type]++;
+                    render();
+                }
+            },
+            buyLand: function() {
+                if (state.coins >= landPrice) {
+                    state.coins -= landPrice;
+                    state.plots.push({ status: 'empty', type: null });
+                    landPrice = Math.floor(landPrice * 1.8); // Preço sobe
                     render();
                 }
             },
@@ -255,15 +279,7 @@
         };
     })();
 
-    const ui = {
-        toggleInventory: () => {
-            const panel = document.getElementById('inventory-panel');
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        }
-    };
-
     game.init();
 </script>
-
 </body>
 </html>
